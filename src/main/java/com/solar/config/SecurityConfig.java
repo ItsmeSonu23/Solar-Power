@@ -68,7 +68,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowCredentials(true);
-        corsConfig.addAllowedOrigin("*"); // Front-end URL
+        corsConfig.addAllowedOrigin("https://peaceful-toffee-c559f8.netlify.app/**" ); // Front-end URL
         corsConfig.addAllowedHeader("*");
         corsConfig.addAllowedMethod("*");
 
