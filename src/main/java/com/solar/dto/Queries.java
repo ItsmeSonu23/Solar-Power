@@ -8,9 +8,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Queries {
-    private String querySubject;
-    private String queryPhoneNumber;
-    private String queryEmail;
-    private String queryDescription;
-    private QueryStatus status;
+    private String firstName;
+    private String lastName;
+    private String connectionType;
+    private String phoneNumber;
+    private String email;
+    private String country;
+    private String city;
+    private String message;
 }

@@ -27,11 +27,15 @@ public class QueryController {
         MimeMessage mm = mailSender.createMimeMessage();
         MimeMessageHelper mmh = new MimeMessageHelper(mm, true);
         mmh.setTo("asasino3180@gmail.com");
-        mmh.setSubject(queries.getQuerySubject());
-        mmh.setText("Phone Number: " + queries.getQueryPhoneNumber() + "\n" +
-                    "Email: " + queries.getQueryEmail() + "\n" +
-                    "Description: " + queries.getQueryDescription());
-        mmh.setFrom(queries.getQueryEmail());
+        mmh.setSubject(queries.getConnectionType());
+        mmh.setText("First Name: " + queries.getFirstName() + "\n" +
+                    "Last Name: " + queries.getLastName() + "\n"+
+                    "Phone Number: " + queries.getPhoneNumber() + "\n" +
+                    "Email: " + queries.getEmail() + "\n" +
+                    "Country: " + queries.getCountry() + "\n" + 
+                    "City: " + queries.getCity() + "\n" +
+                    "Message: " + queries.getMessage() + "\n");
+        mmh.setFrom(queries.getEmail());
         mailSender.send(mm);
 
         return ResponseEntity.ok("Query sent successfully!");
