@@ -55,7 +55,8 @@ public class SecurityConfig {
                 .authenticated()
                 .and()
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(point))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2Login();
 
         // Add the JWT filter before UsernamePasswordAuthenticationFilter to process the
         // JWT
