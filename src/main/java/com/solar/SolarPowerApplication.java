@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SolarPowerApplication {
 
 	public static void main(String[] args) {
-		EnvLoader.load(); // Load environment variables
 		SpringApplication.run(SolarPowerApplication.class, args);
 	}
 
