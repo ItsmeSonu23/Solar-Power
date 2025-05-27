@@ -25,12 +25,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Tag(name = "Query Controller", description = "Handles customer queries and OTP verification")
 @RestController
 @RequestMapping("/api/v1/queries")
+@CrossOrigin("*")
 public class QueryController {
 
     @Autowired

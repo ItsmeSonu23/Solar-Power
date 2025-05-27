@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class FeedbackDto {
     @Id
     private String id;
-
     private String name;
     private String email;
     private Integer rating;
