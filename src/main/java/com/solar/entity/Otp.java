@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Document(collection = "otp")
 public class Otp {
-    private String userEmail;
+    private String email;
     private String otpCode;
     private LocalDateTime creationTime;
 }

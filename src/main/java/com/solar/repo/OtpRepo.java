@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 import com.solar.entity.Otp;
 @Repository
 public interface OtpRepo extends MongoRepository<Otp, String> {
-     Optional<Otp> findByUserEmail(String userEmail);
+     Optional<Otp> findByEmail(String email);
      List<Otp> findByCreationTimeBefore(LocalDateTime expiry);
 }
