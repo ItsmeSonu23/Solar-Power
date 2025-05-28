@@ -1,6 +1,7 @@
 package com.solar.controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -105,13 +107,23 @@ public class QueryController {
                         @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
         })
         @PostMapping("/verifyOtp")
-        public ResponseEntity<String> verifyOtp(@RequestParam String email,@RequestParam String otp) {
-                Otp otpEntity = otpRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("OTP not found for the given email"));
-                if(otpEntity.getOtpCode().equals(otp)) {
+        public ResponseEntity<String> verifyOtp(@RequestParam String email, @RequestParam String otp) {
+                Otp otpEntity = otpRepo.findByEmail(email)
+                                .orElseThrow(() -> new RuntimeException("OTP not found for the given email"));
+                if (otpEntity.getOtpCode().equals(otp)) {
                         return ResponseEntity.ok("OTP verified successfully!");
                 } else {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body("Invalid OTP or Email. Please try again.");
+                                        .body("Invalid OTP or Email. Please try again.");
+                }
+        }
+
+        @Scheduled(fixedRate = 60000)
+        public void removeExpiredOtps() {
+                LocalDateTime expiry = LocalDateTime.now().minusMinutes(5);
+                List<Otp> expiredOtps = otpRepo.findByCreationTimeBefore(expiry);
+                if (!expiredOtps.isEmpty()) {
+                        otpRepo.deleteAll(expiredOtps);
                 }
         }
 
