@@ -26,10 +26,6 @@ public class OtpService {
     private JavaMailSender mailSender;
 
     public String generateOtp(String email) throws MessagingException {
-        // Check if an OTP already exists for the email
-        if (otpRepo.findByEmail(email).isPresent()) {
-            otpRepo.deleteByEmail(email);
-        }
         MimeMessage mm = mailSender.createMimeMessage();
         MimeMessageHelper msg = new MimeMessageHelper(mm, true);
         msg.setTo(email);
@@ -46,13 +42,17 @@ public class OtpService {
         Otp otpentity = otpRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("OTP_NOT_FOUND"));
         if (!otpentity.getOtpCode().equals(otp))
             throw new RuntimeException("OTP_INCORRECT");
+        if (otpentity.getCreationTime().isBefore(LocalDateTime.now().minusMinutes(1)))
+            throw new RuntimeException("OTP_EXPIRED");
         return true;
     }
 
     @Scheduled(fixedRate = 60000)
     public void removeExpiredOtps() {
-        LocalDateTime expiry = LocalDateTime.now().minusMinutes(5);
+        LocalDateTime expiry = LocalDateTime.now().minusMinutes(1);
+        System.out.println("Checking for expired OTPs before: " + expiry);
         List<Otp> expiredOtps = otpRepo.findByCreationTimeBefore(expiry);
+        System.out.println("Removing expired OTPs: " + expiredOtps.size());
         if (!expiredOtps.isEmpty()) {
             otpRepo.deleteAll(expiredOtps);
         }

@@ -10,7 +10,8 @@ import org.springframework.stereotype.Repository;
 import com.solar.entity.Otp;
 @Repository
 public interface OtpRepo extends MongoRepository<Otp, String> {
-     Optional<Otp> findByEmail(String email);
-     void deleteByEmail(String email);
-     List<Otp> findByCreationTimeBefore(LocalDateTime expiry);
+    Optional<Otp> findByEmail(String email); // if one OTP per email
+
+    List<Otp> findByCreationTimeBefore(LocalDateTime expiryCutoff); // for expired OTPs
 }
+
