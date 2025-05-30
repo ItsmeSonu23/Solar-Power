@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.solar.dto.Queries;
 import com.solar.entity.Otp;
 import com.solar.repo.OtpRepo;
+import com.solar.service.OtpService;
 import com.solar.utility.Data;
 import com.solar.utility.Utilities;
 
@@ -41,10 +42,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class QueryController {
 
         @Autowired
-        private JavaMailSender mailSender;
+        private OtpService otpService;
 
         @Autowired
-        private OtpRepo otpRepo;
+        private JavaMailSender mailSender;
 
         @Operation(summary = "Send a customer query via email")
         @ApiResponses(value = {
@@ -70,7 +71,6 @@ public class QueryController {
                                 queries.getConnectionType(),
                                 queries.getMessage()), true); // true to indicate HTML content
                 mmh.setFrom(queries.getEmail());
-
                 mailSender.send(mm);
 
                 return ResponseEntity.ok("Query sent successfully!");
@@ -86,17 +86,7 @@ public class QueryController {
                         @PathVariable @Parameter(description = "Email address to send OTP") String email)
                         throws MessagingException {
                 // Logic to send OTP email using mailSender
-                MimeMessage mm = mailSender.createMimeMessage();
-                MimeMessageHelper msg = new MimeMessageHelper(mm, true);
-                msg.setTo(email);
-                msg.setSubject("Your OTP code from Clover");
-
-                String genOtp = Utilities.generateOTP();
-
-                Otp otp = new Otp(email, genOtp, LocalDateTime.now());
-                otpRepo.save(otp);
-                msg.setText(Data.getMessageBody(email, genOtp), true);
-                mailSender.send(mm);
+                otpService.generateOtp(email);
                 return ResponseEntity.ok("OTP sent successfully to " + email + "! Please check your inbox.");
         }
 
@@ -106,24 +96,19 @@ public class QueryController {
                         @ApiResponse(responseCode = "400", description = "Invalid OTP or Email"),
                         @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
         })
+        
         @PostMapping("/verifyOtp")
         public ResponseEntity<String> verifyOtp(@RequestParam String email, @RequestParam String otp) {
-                Otp otpEntity = otpRepo.findByEmail(email)
-                                .orElseThrow(() -> new RuntimeException("OTP not found for the given email"));
-                if (otpEntity.getOtpCode().equals(otp)) {
-                        return ResponseEntity.ok("OTP verified successfully!");
-                } else {
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                        .body("Invalid OTP or Email. Please try again.");
-                }
-        }
-
-        @Scheduled(fixedRate = 60000)
-        public void removeExpiredOtps() {
-                LocalDateTime expiry = LocalDateTime.now().minusMinutes(5);
-                List<Otp> expiredOtps = otpRepo.findByCreationTimeBefore(expiry);
-                if (!expiredOtps.isEmpty()) {
-                        otpRepo.deleteAll(expiredOtps);
+                try {
+                        Boolean isVerified = otpService.verifyOtp(email, otp);
+                        if (isVerified) {
+                                return ResponseEntity.ok("OTP verified successfully!");
+                        } else {
+                                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid OTP or Email.");
+                        }
+                } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .body("Error verifying OTP: " + e.getMessage());
                 }
         }
 
