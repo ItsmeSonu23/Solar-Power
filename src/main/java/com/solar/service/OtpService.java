@@ -39,7 +39,7 @@ public class OtpService {
     }
 
     public Boolean verifyOtp(String email, String otp) throws Exception {
-        Otp otpentity = otpRepo.findById(email).orElseThrow(() -> new RuntimeException("OTP_NOT_FOUND"));
+        Otp otpentity = otpRepo.findByEmail(email).orElseThrow(() -> new RuntimeException("OTP_NOT_FOUND"));
         if (!otpentity.getOtpCode().equals(otp))
             throw new RuntimeException("OTP_INCORRECT");
         return true;
