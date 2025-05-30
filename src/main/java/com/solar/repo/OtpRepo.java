@@ -11,5 +11,6 @@ import com.solar.entity.Otp;
 @Repository
 public interface OtpRepo extends MongoRepository<Otp, String> {
      Optional<Otp> findByEmail(String email);
+     void deleteByEmail(String email);
      List<Otp> findByCreationTimeBefore(LocalDateTime expiry);
 }

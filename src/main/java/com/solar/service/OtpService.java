@@ -26,6 +26,10 @@ public class OtpService {
     private JavaMailSender mailSender;
 
     public String generateOtp(String email) throws MessagingException {
+        // Check if an OTP already exists for the email
+        if (otpRepo.findByEmail(email).isPresent()) {
+            otpRepo.deleteByEmail(email);
+        }
         MimeMessage mm = mailSender.createMimeMessage();
         MimeMessageHelper msg = new MimeMessageHelper(mm, true);
         msg.setTo(email);

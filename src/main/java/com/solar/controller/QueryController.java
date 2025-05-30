@@ -95,8 +95,7 @@ public class QueryController {
                         @ApiResponse(responseCode = "200", description = "OTP verified successfully"),
                         @ApiResponse(responseCode = "400", description = "Invalid OTP or Email"),
                         @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
-        })
-        
+        }) 
         @PostMapping("/verifyOtp")
         public ResponseEntity<String> verifyOtp(@RequestParam String email, @RequestParam String otp) {
                 try {
